@@ -1,6 +1,7 @@
 # Embedder
 
 [![npm version](https://img.shields.io/npm/v/@embedder/embedder.svg?style=flat-square)](https://www.npmjs.com/package/@embedder/embedder)
+[![npm downloads](https://img.shields.io/npm/dt/@embedder/embedder.svg)](https://www.npmjs.com/package/@embedder/embedder)
 
 Embedder is an AI coding agent that lives in your terminal, built specifically for embedded software development. It understands your hardware, indexes datasheets and reference manuals, and helps you write and test firmware faster.
 
