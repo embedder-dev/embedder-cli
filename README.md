@@ -22,9 +22,11 @@ Windows (Powershell)
 irm https://embedder.com/install | iex
 ```
 
-### 2. Upload Documentation
+### 2. Select Documentation
 
-If your hardware is not supported, visit [app.embedder.com](https://app.embedder.com) and upload:
+<img width="1134" height="738" alt="Screenshot 2026-01-30 at 10 37 06 AM" src="https://github.com/user-attachments/assets/bc4a1af6-f012-42cf-b8b3-536f54052794" />
+
+#### If your hardware is not supported, visit [app.embedder.com](https://app.embedder.com) and upload:
 - Datasheets
 - Reference manuals
 - Schematics
