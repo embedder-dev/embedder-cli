@@ -1,55 +1,77 @@
 # Embedder
 
-![](https://img.shields.io/badge/Node.js-18%2B-brightgreen?style=flat-square) [![npm]](https://www.npmjs.com/package/@embedder/embedder)
+[![npm version](https://img.shields.io/npm/v/@embedder/embedder.svg?style=flat-square)](https://www.npmjs.com/package/@embedder/embedder)
 
-[npm]: https://img.shields.io/npm/v/@embedder/embedder.svg?style=flat-square
+Embedder is an AI coding agent that lives in your terminal, built specifically for embedded software development. It understands your hardware, indexes datasheets and reference manuals, and helps you write and test firmware faster.
 
-Embedder is an AI coding tool that lives in your terminal, specializing in embedded software development. It understands your hardware, indexes datasheets and reference manuals, and helps you write and test firmware faster by executing routine tasks, debugging on real hardware, and handling complex peripheral configurations.
+![cmkzv96k64bde0i38kjb9oorl](https://github.com/user-attachments/assets/c1cc91d9-74a4-4f55-9e60-cd8d213524cf)
 
-**Learn more in the [official documentation](https://docs.embedder.dev)**.
 
-## Get started
 
-1. Install Embedder:
+## Get Started
 
-```sh
+### 1. Install Embedder
+
+MacOS / Linux
+```
 curl -fsSL https://embedder.com/install | bash
 ```
+Windows (Powershell)
+```
+irm https://embedder.com/install | iex
+```
 
-2. Navigate to your project directory and run `embedder`.
+### 2. Upload Documentation
+
+If your hardware is not supported, visit [app.embedder.com](https://app.embedder.com) and upload:
+- Datasheets
+- Reference manuals
+- Schematics
+- Application notes
+- Safety standards
+
+Contact [help@embedder.com](mailto:help@embedder.com) to suggest additions to our MCU/peripheral catalog.
+
+### 3. Run Embedder
+
+Navigate to your project directory and run:
+
+```
+embedder
+```
+
+You'll be prompted to log in with your account on first run.
 
 ## What Makes Embedder Different
 
-Embedder is built specifically for embedded systems:
+Embedder is purpose-built for embedded systems:
 
-- **Hardware-Aware**: Understands microcontroller peripherals (GPIO, SPI, I²C, UART, ADC, DMA, timers, interrupts), memory constraints, and real-time requirements
-- **Documentation Intelligence**: Indexes datasheets, reference manuals, and schematics to generate code based on your actual hardware specs
-- **Real Hardware Integration**: Connects with serial ports, debuggers, logic analyzers, and oscilloscopes to validate and debug on physical devices
-- **Embedded Expertise**: Deep knowledge of RTOS systems, low-level driver development, and MISRA-C/C++ compliance
+- **Hardware-Aware**: Understands microcontroller peripherals (GPIO, SPI, I²C, UART, ADC, DMA, timers, interrupts), memory constraints, and real-time requirements.
+
+- **Documentation Intelligence**: Indexes your datasheets, reference manuals, and schematics to generate code grounded in your actual hardware specs.
+
+- **Real Hardware Integration**: Connects directly with serial ports, debuggers, logic analyzers, and oscilloscopes to validate and debug on physical devices without switching tools.
+
+- **Embedded Expertise**: Deep knowledge of RTOS systems (FreeRTOS, Zephyr, ThreadX), low-level driver development, and MISRA-C/C++ compliance.
+
+- **Cited Outputs**: Every code generation includes inline references to specific datasheet sections, register definitions, and application notes.
 
 ## Supported Platforms
 
-Works with any embedded platform including ESP32, STM32, nRF, Raspberry Pi Pico, Arduino, and more. Compatible with all major toolchains including GCC, IAR, Keil, and vendor-specific compilers.
+Works with any embedded platform, including:
+- **MCUs**: ESP32, STM32, nRF, Raspberry Pi Pico, Arduino, PIC, MSP430, and more
+- **Toolchains**: GCC-ARM, GCC-RISC-V, IAR, Keil, LLVM, and vendor-specific compilers
+- **Build systems**: PlatformIO, CMake, Make, Ninja
 
-## Connect on Discord
+## Community
 
-Join the [Embedder Discord](https://discord.com/invite/NMT5ndEyxk) to connect with other embedded developers. Get help, share feedback, and discuss your projects with the community.
+Join the [Embedder Discord](https://discord.com/invite/NMT5ndEyxk) to connect with other embedded developers. Get help, share feedback, and discuss your projects.
 
-## Data collection, usage, and retention
+## Enterprise
 
-When you use Embedder, we collect feedback, which includes usage data.
+For teams requiring air-gapped deployment, on-premises hosting, or compliance with ITAR, ISO 27001, and other standards, contact us at [founders@embedder.com](mailto:founders@embedder.com).
+For full details, review our [Terms of Service](https://embedder.com/terms-of-service) and [Privacy Policy](https://embedder.com/privacy-policy).
 
-### How we use your data
+## License
 
-We use your data to:
-- Provide and maintain our services
-- Improve our services and develop new features
-- Provide customer support and technical assistance
-
-All codebase indexing happens locally on your machine. For cloud features, we offer enterprise agreements with strict data isolation and compliance with ITAR, ISO 27001, and other standards.
-
-### Privacy safeguards
-
-We have implemented several safeguards to protect your data, including limited retention periods for sensitive information, restricted access to user session data, and clear policies against using feedback for model training without consent.
-
-For full details, please review our [Terms of Service](https://embedder.dev/terms-of-service) and [Privacy Policy](https://embedder.dev/privacy-policy).
+See [LICENSE](./LICENSE) for details.
