@@ -24,7 +24,7 @@ irm https://embedder.com/install | iex
 
 ### 2. Select Documentation
 
-<img width="1134" height="738" alt="Screenshot 2026-01-30 at 10 37 06 AM" src="https://github.com/user-attachments/assets/bc4a1af6-f012-42cf-b8b3-536f54052794" />
+<img width="1134" height="738" alt="image" src="https://github.com/user-attachments/assets/d4087d1c-413a-435f-9136-76f9f45c25a2" />
 
 #### If your hardware is not supported, visit [app.embedder.com](https://app.embedder.com) and upload:
 - Datasheets
