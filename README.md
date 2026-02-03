@@ -22,7 +22,7 @@ Windows (Powershell)
 irm https://embedder.com/install | iex
 ```
 
-### 2. Select Documentation
+### 2. Select Platform & Peripherals
 
 <img width="1134" height="738" alt="image" src="https://github.com/user-attachments/assets/d4087d1c-413a-435f-9136-76f9f45c25a2" />
 
