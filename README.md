@@ -1,80 +1,59 @@
 # Embedder
 
-[![npm version](https://img.shields.io/npm/v/@embedder/embedder.svg?style=flat-square)](https://www.npmjs.com/package/@embedder/embedder)
-[![npm downloads](https://img.shields.io/npm/dt/@embedder/embedder.svg)](https://www.npmjs.com/package/@embedder/embedder)
+**Build firmware with AI agents.**
 
-Embedder is an AI coding agent that lives in your terminal, built specifically for embedded software development. It understands your hardware, indexes datasheets and reference manuals, and helps you write and test firmware faster.
+Embedder is an AI agent for firmware. It reads your datasheets, writes the code, flashes the board, runs the tests, and fixes its own mistakes, autonomously. Every step is grounded in reference manuals, schematics, and errata, with closed-loop validation on real hardware.
 
-![cmkzv96k64bde0i38kjb9oorl](https://github.com/user-attachments/assets/c1cc91d9-74a4-4f55-9e60-cd8d213524cf)
+[**Request a Pilot →**](https://embedder.com/contact)
 
+---
 
+## Why Embedder?
+
+Generic AI coding tools generate plausible-looking code, and in firmware, *plausible is dangerous*. A hallucinated register address or invented clock tree doesn't fail a lint check. It fails on the bench, or worse, in the field.
+
+Embedder is built differently. It's hardware-aware from the ground up: it knows your exact part, your board's wiring, and what the silicon actually did at runtime.
+
+## Capabilities
+
+| Capability | What it does |
+|---|---|
+| [Datasheet Intelligence](https://embedder.com/capabilities/datasheet-intelligence) | Every generated value cites the reference manual section it came from. No hallucinated registers, no invented clock trees |
+| [Schematic Ingestion](https://embedder.com/capabilities/schematic-ingestion) | Reads Altium, KiCad, Eagle, PADS, and Xpedition schematics so generated code already knows how the board is wired |
+| [Hardware Interaction](https://embedder.com/capabilities/hardware-interaction) | Drives debug probes, logic analyzers, scopes, and power profilers, folding real signals back into the loop |
+| [Agent Orchestration](https://embedder.com/capabilities/agent-orchestration) | Specialized agents build, flash, test, and repair firmware in a closed loop, turning multi-hour workflows into minutes |
+| [Hallucination Detection](https://embedder.com/capabilities/hallucination-detection) | Cross-references every register, bit field, and timing value against the docs. Uncited values are blocked, low-confidence ones flagged for review |
+
+## Solutions
+
+| Use case | What Embedder does |
+|---|---|
+| [Rapid Bring-Up](https://embedder.com/solutions/rapid-bringup) | From schematic to blinking board, fast |
+| [Debugging & RCA](https://embedder.com/solutions/debugging-rca) | Root-cause analysis against the live board |
+| [Platform Migrations](https://embedder.com/solutions/platform-migrations) | Move between MCU families without a rewrite from scratch |
+| [Automated Testing](https://embedder.com/solutions/automated-testing) | Closed-loop test generation and execution on real hardware |
+| [Power Optimization](https://embedder.com/solutions/power-optimization) | Every microamp accounted for, verified on silicon |
+
+## Platform Support
+
+- **MCUs & silicon:** STM32, Nordic, ESP32, Teensy, Arduino, Raspberry Pi, plus Texas Instruments, NXP, Infineon, Microchip, Renesas, and Atmel. Architectures include ARM Cortex-M0/M4/M7, RISC-V, Xtensa, AVR, and PIC32
+- **Protocols:** SPI, I2C, UART, CAN/CAN-FD, Ethernet/MAC, USB-PD, BLE 5.4
+- **Test equipment:** J-Link, OpenOCD, Saleae and Digilent logic analyzers, Nordic PPK, Joulescope, Siglent and Rigol instruments
+- **Compliance standards:** MISRA C:2012, CERT C, ISO 26262, IEC 61508, IEC 62304, DO-178C
 
 ## Get Started
 
-### 1. Install Embedder
+Embedder is currently available through pilot programs.
 
-MacOS / Linux
-```
-curl -fsSL https://embedder.com/install | bash
-```
-Windows (Powershell)
-```
-irm https://embedder.com/install | iex
-```
+[**Request a Pilot →**](https://embedder.com/contact)
 
-### 2. Select Platform & Peripherals
+## Resources
 
-<img width="1134" height="738" alt="image" src="https://github.com/user-attachments/assets/d4087d1c-413a-435f-9136-76f9f45c25a2" />
-
-#### If your hardware is not supported, visit [app.embedder.com](https://app.embedder.com) and upload:
-- Datasheets
-- Reference manuals
-- Schematics
-- Application notes
-- Safety standards
-
-Contact [help@embedder.com](mailto:help@embedder.com) to suggest additions to our MCU/peripheral catalog.
-
-### 3. Run Embedder
-
-Navigate to your project directory and run:
-
-```
-embedder
-```
-
-You'll be prompted to log in with your account on first run.
-
-## What Makes Embedder Different
-
-Embedder is purpose-built for embedded systems:
-
-- **Hardware-Aware**: Understands microcontroller peripherals (GPIO, SPI, I²C, UART, ADC, DMA, timers, interrupts), memory constraints, and real-time requirements.
-
-- **Documentation Intelligence**: Indexes your datasheets, reference manuals, and schematics to generate code grounded in your actual hardware specs.
-
-- **Real Hardware Integration**: Connects directly with serial ports, debuggers, logic analyzers, and oscilloscopes to validate and debug on physical devices without switching tools.
-
-- **Embedded Expertise**: Deep knowledge of RTOS systems (FreeRTOS, Zephyr, ThreadX), low-level driver development, and MISRA-C/C++ compliance.
-
-- **Cited Outputs**: Every code generation includes inline references to specific datasheet sections, register definitions, and application notes.
-
-## Supported Platforms
-
-Works with any embedded platform, including:
-- **MCUs**: ESP32, STM32, nRF, Raspberry Pi Pico, Arduino, PIC, MSP430, and more
-- **Toolchains**: GCC-ARM, GCC-RISC-V, IAR, Keil, LLVM, and vendor-specific compilers
-- **Build systems**: PlatformIO, CMake, Make, Ninja
+- [Documentation](https://docs.embedder.com)
+- [Changelog](https://docs.embedder.com/changelog)
+- [Product Demos](https://www.youtube.com/@embedder-dev)
+- [News](https://embedder.com/news)
 
 ## Community
 
-Join the [Embedder Discord](https://discord.com/invite/NMT5ndEyxk) to connect with other embedded developers. Get help, share feedback, and discuss your projects.
-
-## Enterprise
-
-For teams requiring air-gapped deployment, on-premises hosting, or compliance with ITAR, ISO 27001, and other standards, contact us at [founders@embedder.com](mailto:founders@embedder.com).
-For full details, review our [Terms of Service](https://embedder.com/terms-of-service) and [Privacy Policy](https://embedder.com/privacy-policy).
-
-## License
-
-See [LICENSE](./LICENSE) for details.
+[X/Twitter](https://x.com/embedder_dev) · [LinkedIn](https://www.linkedin.com/company/embedder-dev) · [YouTube](https://www.youtube.com/@embedder-dev) · [Discord](https://discord.gg/NMT5ndEyxk)
