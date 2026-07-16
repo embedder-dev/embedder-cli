@@ -93,7 +93,8 @@ resolve_tarball_url() {
 }
 
 # ed25519 needs openssl >= 3 (pkeyutl -rawin); stock macOS ships LibreSSL without
-# it, so fall back to a self-contained python verifier (RFC 8032, stdlib only).
+# it and its /usr/bin/python3 is an xcode-select stub, so fall back to a
+# self-contained perl verifier (bundled + xcode-independent on every mac).
 find_openssl() {
 	local o
 	for o in openssl /opt/homebrew/opt/openssl@3/bin/openssl /usr/local/opt/openssl@3/bin/openssl /opt/homebrew/bin/openssl; do
@@ -103,58 +104,87 @@ find_openssl() {
 	return 1
 }
 
-verify_ed25519_python() {
-	local msg="$1" sig="$2" vpy
-	vpy="$(mktemp)"
-	cat > "$vpy" <<'PYEOF'
-import sys, os, base64, hashlib
-p = 2**255 - 19
-def inv(x): return pow(x, p - 2, p)
-d = (-121665 * inv(121666)) % p
-Iv = pow(2, (p - 1) // 4, p)
-def xrecover(y):
-    xx = (y * y - 1) * inv(d * y * y + 1) % p
-    x = pow(xx, (p + 3) // 8, p)
-    if (x * x - xx) % p != 0: x = (x * Iv) % p
-    if x % 2 != 0: x = p - x
-    return x
-By = 4 * inv(5) % p
-B = (xrecover(By) % p, By % p)
-def add(P, Q):
-    x1, y1 = P; x2, y2 = Q
-    t = d * x1 * x2 * y1 * y2 % p
-    return ((x1 * y2 + x2 * y1) * inv(1 + t) % p, (y1 * y2 + x1 * x2) * inv(1 - t) % p)
-def mult(P, e):
-    Q = (0, 1)
-    while e > 0:
-        if e & 1: Q = add(Q, P)
-        P = add(P, P); e >>= 1
-    return Q
-def bit(h, i): return (h[i // 8] >> (i % 8)) & 1
-def decodepoint(s):
-    y = sum(2**i * bit(s, i) for i in range(255))
-    x = xrecover(y)
-    if x & 1 != bit(s, 255): x = p - x
-    if (-x * x + y * y - 1 - d * x * x * y * y) % p != 0: raise ValueError("off curve")
-    return (x, y)
-pem = os.environ["PUBKEY_PEM"]
-pk = base64.b64decode("".join(l for l in pem.splitlines() if "-" not in l))[-32:]
-msg = open(sys.argv[1], "rb").read()
-sig = open(sys.argv[2], "rb").read()
-if len(sig) != 64: sys.exit(1)
-try:
-    if len(sig) != 64: raise ValueError("bad signature length")
-    R = decodepoint(sig[:32]); A = decodepoint(pk)
-    S = sum(2**i * bit(sig[32:], i) for i in range(256))
-    h = sum(2**i * bit(hashlib.sha512(sig[:32] + pk + msg).digest(), i) for i in range(512))
-    ok = mult(B, S) == add(R, mult(A, h % (2**252 + 27742317777372353535851937790883648493)))
-except Exception:
-    ok = False
-sys.exit(0 if ok else 1)
-PYEOF
+verify_ed25519_perl() {
+	local msg="$1" sig="$2" vpl
+	vpl="$(mktemp)"
+	cat > "$vpl" <<'PLEOF'
+use strict; use warnings;
+use Math::BigInt;
+use MIME::Base64 qw(decode_base64);
+use Digest::SHA qw(sha512);
+my $p = Math::BigInt->new(2)->bpow(255)->bsub(19);
+my $L = Math::BigInt->new(2)->bpow(252)->badd("27742317777372353535851937790883648493");
+sub inv { $_[0]->copy->bmodpow($p - 2, $p) }
+my $d = (Math::BigInt->new(-121665) * inv(Math::BigInt->new(121666))) % $p;
+my $I = Math::BigInt->new(2)->copy->bmodpow(($p - 1) / 4, $p);
+sub xrecover {
+    my $y = shift;
+    my $xx = (($y * $y - 1) * inv($d * $y * $y + 1)) % $p;
+    my $x = $xx->copy->bmodpow(($p + 3) / 8, $p);
+    $x = ($x * $I) % $p if (($x * $x - $xx) % $p) != 0;
+    $x = $p - $x if $x->is_odd;
+    return $x;
+}
+my $By = (Math::BigInt->new(4) * inv(Math::BigInt->new(5))) % $p;
+my $Bx = xrecover($By);
+sub ext { my ($x, $y) = @_; [ $x % $p, $y % $p, Math::BigInt->new(1), ($x * $y) % $p ] }
+my $B = ext($Bx, $By);
+sub padd {
+    my ($P, $Q) = @_;
+    my ($X1, $Y1, $Z1, $T1) = @$P;
+    my ($X2, $Y2, $Z2, $T2) = @$Q;
+    my $A = (($Y1 - $X1) * ($Y2 - $X2)) % $p;
+    my $Bb = (($Y1 + $X1) * ($Y2 + $X2)) % $p;
+    my $C = ($T1 * 2 * $d * $T2) % $p;
+    my $D = ($Z1 * 2 * $Z2) % $p;
+    my $E = ($Bb - $A) % $p; my $F = ($D - $C) % $p;
+    my $G = ($D + $C) % $p; my $H = ($Bb + $A) % $p;
+    return [ ($E * $F) % $p, ($G * $H) % $p, ($F * $G) % $p, ($E * $H) % $p ];
+}
+sub scmul {
+    my ($P, $e) = @_; $e = $e->copy;
+    my $Q = [ Math::BigInt->new(0), Math::BigInt->new(1), Math::BigInt->new(1), Math::BigInt->new(0) ];
+    my $N = $P;
+    while (!$e->is_zero) {
+        $Q = padd($Q, $N) if $e->is_odd;
+        $N = padd($N, $N);
+        $e->brsft(1);
+    }
+    return $Q;
+}
+sub affine { my $P = shift; my $zi = inv($P->[2]); [ ($P->[0] * $zi) % $p, ($P->[1] * $zi) % $p ] }
+sub decodeint {
+    my $s = shift; my $n = Math::BigInt->new(0);
+    for my $i (reverse 0 .. length($s) - 1) { $n = $n * 256 + ord(substr($s, $i, 1)); }
+    return $n;
+}
+sub decodepoint {
+    my $s = shift; my @b = map { ord } split //, $s;
+    my $y = Math::BigInt->new(0);
+    for my $i (reverse 0 .. 254) { $y = $y * 2 + (($b[$i >> 3] >> ($i & 7)) & 1); }
+    my $x = xrecover($y);
+    my $xbit = ($b[31] >> 7) & 1;
+    $x = $p - $x if ($x->is_odd ? 1 : 0) != $xbit;
+    return ext($x, $y);
+}
+my $pem = $ENV{PUBKEY_PEM} // "";
+$pem =~ s/-----[^\n]*-----//g; $pem =~ s/\s//g;
+my $pk = substr(decode_base64($pem), -32);
+local $/;
+open(my $mf, "<:raw", $ARGV[0]) or exit 1; my $msg = <$mf>;
+open(my $sf, "<:raw", $ARGV[1]) or exit 1; my $sig = <$sf>;
+exit 1 if length($sig) != 64;
+my $R = decodepoint(substr($sig, 0, 32));
+my $A = decodepoint($pk);
+my $S = decodeint(substr($sig, 32, 32));
+my $h = decodeint(sha512(substr($sig, 0, 32) . $pk . $msg)) % $L;
+my $lhs = affine(scmul($B, $S));
+my $rhs = affine(padd($R, scmul($A, $h)));
+exit(($lhs->[0] == $rhs->[0] && $lhs->[1] == $rhs->[1]) ? 0 : 1);
+PLEOF
 	local ok=1
-	PUBKEY_PEM="$BRIDGE_UPDATE_PUBKEY_PEM" python3 "$vpy" "$msg" "$sig" && ok=0
-	rm -f "$vpy"
+	PUBKEY_PEM="$BRIDGE_UPDATE_PUBKEY_PEM" /usr/bin/perl "$vpl" "$msg" "$sig" && ok=0
+	rm -f "$vpl"
 	return $ok
 }
 
@@ -177,13 +207,13 @@ verify_signature() {
 		fi
 		rm -f "$pub"; err "signature verification FAILED for embedder-bridge; refusing to install"; exit 1
 	fi
-	if command -v python3 >/dev/null 2>&1; then
-		if verify_ed25519_python "$dir/embedder-bridge" "$dir/embedder-bridge.sig"; then
+	if [ -x /usr/bin/perl ]; then
+		if verify_ed25519_perl "$dir/embedder-bridge" "$dir/embedder-bridge.sig"; then
 			info "release signature verified (ed25519)"; return 0
 		fi
 		err "signature verification FAILED for embedder-bridge; refusing to install"; exit 1
 	fi
-	err "need openssl 3.x or python3 to verify the release signature; install one and retry"
+	err "need openssl 3.x or perl to verify the release signature; install one and retry"
 	exit 1
 }
 
