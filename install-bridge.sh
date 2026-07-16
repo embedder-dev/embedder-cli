@@ -274,7 +274,11 @@ install_service_macos() {
 PLISTEOF
 	chmod 0644 "$PLIST"
 	launchctl bootout "system/$LABEL" 2>/dev/null || true
-	launchctl bootstrap system "$PLIST"
+	for _ in $(seq 1 20); do
+		launchctl print "system/$LABEL" >/dev/null 2>&1 || break
+		sleep 0.3
+	done
+	launchctl bootstrap system "$PLIST" 2>/dev/null || launchctl kickstart -k "system/$LABEL"
 	launchctl enable "system/$LABEL" 2>/dev/null || true
 }
 
