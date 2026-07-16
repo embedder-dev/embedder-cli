@@ -358,6 +358,10 @@ show_setup_code() {
 
 uninstall_bridge() {
 	require_root
+	if [ -x "$BIN_DIR/embedder-bridge" ] && [ -f "$STATE_DIR/relay-bridge-id" ]; then
+		info "deregistering bridge from the backend"
+		"$BIN_DIR/embedder-bridge" --config "$CONFIG_DIR/config.toml" deregister 2>/dev/null || true
+	fi
 	info "stopping and removing the bridge service"
 	case "$OS" in
 		Linux)
