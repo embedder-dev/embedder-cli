@@ -327,8 +327,7 @@ install_bridge() {
 	else
 		show_setup_code
 	fi
-	printf "\nInstall a flasher toolchain your project needs (esptool, west, JLink, openocd);\n"
-	printf "see docs/remote-headless-bridge.md.\n"
+	printf "\nInstall a flasher toolchain your project needs (esptool, west, JLink, openocd).\n"
 }
 
 # A fresh bridge boots unenrolled and writes a short claim code to
